@@ -130,7 +130,7 @@ export default function Upload() {
 
       // Redirect to Home Page
       console.log("Send to home ")
-      window.location.href = "/index";
+      window.location.href = "/";
     } catch (err) {
       console.log(err);
       error("Error Saving Feed");

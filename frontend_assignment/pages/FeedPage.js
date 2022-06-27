@@ -55,9 +55,12 @@ export default function FeedPage() {
   const getRelatedFeeds = async () => {
     try {
       const contract = await getContract();
+      console.log("Hellllllp")
       let feedId = getUrlValue()["id"];
+      console.log(feedId)
       // Get all feeds and return feeds and filter only the one in the same category as the feed
       const allFeeds = await contract.getAllFeeds();
+      console.log(allFeeds);
       const singleFeed = await contract.getFeed(feedId);
       // Format feed
       const formattedSingleFeed = {

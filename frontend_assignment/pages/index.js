@@ -6,6 +6,7 @@ import Head from "next/head"
 import React from "react"
 import { useState, useEffect } from "react"
 import GreetForm from "./components/GreetingForm";
+
 //import Greeter from "artifacts/contracts/Greeters.sol/Greeters.json"
 
 import { Header } from "./components/Header";
@@ -47,6 +48,8 @@ export default function Main() {
       if (accounts.length !== 0) {
         const account = accounts[0];
         setCurrentAccount(account);
+        console.log("rishabh  ")
+        console.log(account)
         success("🦄 Wallet is Connected!");
       } else {
         success("Welcome 🎉  ");
@@ -72,6 +75,17 @@ export default function Main() {
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
+        params: [{
+          chainId: "31337",
+          rpcUrls: ["http://localhost:8545/"],
+          chainName: "localhost",
+          nativeCurrency: {
+              name: "ETH",
+              symbol: "ETH",
+              decimals: 18
+          },
+          blockExplorerUrls: []
+      }]
       });
       setCurrentAccount(accounts[0]);
     } catch (err) {
@@ -82,16 +96,24 @@ export default function Main() {
   /*
    * Get Feeds
    */
+  console.log("Stage 1");
   const getFeeds = async () => {
     try {
       setLoading(true);
       const contract = await getContract();
+      console.log("Stage 2");
+      console.log(contract)
       const AllFeeds = await contract.getAllFeeds();
+      const total = await contract.getTotalFeeds();
+      console.log("Stage 3 ", total);
+      console.log(AllFeeds.length)
+      
       /*
        * We only need title, category, coverImageHash, and author
        * pick those out
        */
       const formattedFeed = AllFeeds.map((feed) => {
+        console.log(feed.coverImageHash)
         return {
           id: feed.id,
           title: feed.title,

@@ -11,7 +11,7 @@ export default function Feed({ feed }) {
     <div>
       <img
         className=" rounded-lg w-full bg-contain h-80"
-        src={`https://ipfs.infura.io/ipfs/${feed.coverImageHash}`}
+        src={`https://${feed.coverImageHash}.ipfs.dweb.link/logo192.png`}
         alt="cover"
       />
       <div className="flex justify-between flex-row py-4 border-borderWhiteGray dark:border-borderGray border-b-2">
