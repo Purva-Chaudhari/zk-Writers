@@ -13,7 +13,7 @@ module.exports = {
         backgroundBlack: "#1a1c1f",
         whiteIcons: "#1a1c1f",
         borderWhiteGray: "#dfdfdf",
-        textSubTitle: "#878787",
+        textSubTitle: "#000",
         textTitle: "#fff",
       },
       boxShadow: {

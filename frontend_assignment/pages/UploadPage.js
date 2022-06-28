@@ -188,18 +188,6 @@ export default function Upload() {
             />
 
             <div className="flex flex-row mt-10 w-[60%] justify-between">
-              <div className="flex flex-col w-2/5	">
-                <label className="text-gray-600 dark:text-[#9CA3AF] text-md font-bold">
-                  Location
-                </label>
-                <input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  type="text"
-                  placeholder="Lagos - Nigeria"
-                  className="rounded-md dark:text-white mt-2 dark:placeholder:text-gray-600 h-12 p-2 border border-borderWhiteGray bg-white dark:bg-backgroundBlack dark:border-[#444752] focus:outline-none"
-                />
-              </div>
               <div className="flex flex-col w-2/5">
                 <label className="text-gray-600 dark:text-[#9CA3AF] text-md font-bold">
                   Category

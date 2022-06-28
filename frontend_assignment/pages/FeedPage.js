@@ -117,7 +117,7 @@ export default function FeedPage() {
             </h4>
             {relatedFeeds.map((f) => {
               return (
-                <Link
+              <Link
                   onClick={() => {
                     setFeed(f);
                   }}

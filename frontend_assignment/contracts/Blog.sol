@@ -3,15 +3,39 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@appliedzkp/semaphore-contracts/base/SemaphoreCore.sol";
+import "@appliedzkp/semaphore-contracts/interfaces/IVerifier.sol";
+import "@appliedzkp/semaphore-contracts/base/SemaphoreGroups.sol";
 
-contract Blog {
+contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
+    uint256 groupId = 0;
+    uint8 depth = 20;
     uint256 totalFeeds;
-
+    uint x;
     using Counters for Counters.Counter;
     Counters.Counter private _feedIds;
 
-    constructor() {
+    event FeedCreated(
+        uint256 id,
+        string title,
+        string description,
+        string category,
+        string coverImageHash,
+        string date
+    );
+
+    // The external verifier used to verify Semaphore proofs.
+    IVerifier public verifier;
+
+    constructor(address _verifier) {
         console.log("Blogs deployed");
+        verifier = IVerifier(_verifier);
+        _createGroup(groupId,depth,0);
+    }
+
+    function addMember(uint256 commitmentId) public {
+        _addMember(groupId,commitmentId);
     }
 
     /*
@@ -22,26 +46,10 @@ contract Blog {
         uint256 id;
         string title;
         string description;
-        string location;
         string category;
         string coverImageHash;
         string date;
-        address author;
     }
-
-    /*
-     * A little magic is known as an event in Solidity!
-     */
-    event FeedCreated(
-        uint256 id,
-        string title,
-        string description,
-        string location,
-        string category,
-        string coverImageHash,
-        string date,
-        address author
-    );
 
     /*
      * I declare variable feeds that let me store an array of structs.
@@ -90,22 +98,33 @@ contract Blog {
      * - _coverImageHash: The hash of the cover image of the feed
      * - _date: The date of the feed
      */
-
+    
     function createFeed(
         string memory _title,
         string memory _description,
-        string memory _location,
         string memory _category,
         string memory _coverImageHash,
-        string memory _date
+        string memory _date,
+        bytes32 _signal,
+        uint256 root,
+        uint256 _nullifierHash,
+        uint256 externalNullifier,
+        uint256[8] calldata _proof
     ) public {
         // Validation
         require(bytes(_coverImageHash).length > 0);
         require(bytes(_title).length > 0);
         require(bytes(_description).length > 0);
-        require(bytes(_location).length > 0);
         require(bytes(_category).length > 0);
-        require(msg.sender != address(0));
+
+        _verifyProof(
+             _signal, 
+             root, 
+             _nullifierHash, 
+             externalNullifier, 
+             _proof,
+             verifier
+        );
 
         totalFeeds++;
 
@@ -123,11 +142,9 @@ contract Blog {
                 _feedIds.current(),
                 _title,
                 _description,
-                _location,
                 _category,
                 _coverImageHash,
-                _date,
-                msg.sender
+                _date
             )
         );
 
@@ -139,11 +156,9 @@ contract Blog {
             _feedIds.current(),
             _title,
             _description,
-            _location,
             _category,
             _coverImageHash,
-            _date,
-            msg.sender
+            _date
         );
     }
 }

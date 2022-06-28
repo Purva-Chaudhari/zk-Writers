@@ -1,31 +1,99 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+//const { expect } = require("chai");
+const { Strategy, ZkIdentity } = require("@zk-kit/identity")
+const { generateMerkleProof, Semaphore, Group} = require("@zk-kit/protocols")
+//import { expect } from "chai"
+const { Contract, Signer } = require("ethers")
+const { ethers, run } = require("hardhat")
 
 describe("Blog", function () {
-  this.timeout(0);
+  const wasmFilePath = "./public/semaphore.wasm"
+  const finalZkeyPath = "./public/semaphore.zkey"
 
-  let NewsFeed;
-  let newsFeedContract;
+  let BlogFeed;
+  let BlogFeedContract;
+  let contractOwner;
 
   before(async () => {
-    NewsFeed = await ethers.getContractFactory("Blog");
-    newsFeedContract = await NewsFeed.deploy();
+   BlogFeed = await ethers.getContractFactory("Blog");
+   BlogFeedContract = await BlogFeed.deploy();
+   const signers = await ethers.getSigners()
+   contractOwner = signers[0]
   });
 
+  it("should Register", async () => {
+    const message = await contractOwner.signMessage("Register: zkWriter")
+
+    const identity = new ZkIdentity(Strategy.MESSAGE, message)
+    const identityCommitment = identity.genIdentityCommitment()
+
+    const tx = await BlogFeedContract.addMember(identityCommitment)
+    const rc = await tx.wait()
+
+    BlogFeedContract.on("MemberAdded", (groupId, commitmentId) => {
+        console.log(groupId, commitmentId);
+    });
+
+
   it("should deploy", async () => {
-    expect(newsFeedContract.address).to.not.be.null;
+    expect(BlogFeedContract.address).to.not.be.null;
   });
 
   it("should have a default value of 0", async () => {
-    const value = await newsFeedContract.getTotalFeeds();
+    const value = await BlogFeedContract.getTotalFeeds();
     expect(value.toString()).to.equal("0");
   });
 
-  it("should be able to create feed", async () => {
-    const tx = await newsFeedContract.createFeed(
+  it("should create feed", async () => {
+    const message = await contractOwner.signMessage("Register: zkWriter")
+
+    const identity = new ZkIdentity(Strategy.MESSAGE, message)
+    const identityCommitment = identity.genIdentityCommitment()
+
+    const tx = await BlogFeedContract.addMember(identityCommitment)
+    const rc = await tx.wait()
+
+    BlogFeedContract.on("MemberAdded", (groupId, commitmentId) => {
+        console.log(groupId, commitmentId);
+    });
+
+    const signal = "Login into test"
+    const bytes32Greeting = ethers.utils.formatBytes32String(signal)
+
+    const merkleProof = generateMerkleProof(20, BigInt(0), [identityCommitment], identityCommitment)
+    const witness = Semaphore.genWitness(
+        identity.getTrapdoor(),
+        identity.getNullifier(),
+        merkleProof,
+        merkleProof.root,
+        signal
+    )
+
+    const fullProof = await Semaphore.genProof(witness, wasmFilePath, finalZkeyPath)
+    const solidityProof = Semaphore.packToSolidityProof(fullProof.proof)
+
+    const nullifierHash = Semaphore.genNullifierHash(merkleProof.root, identity.getNullifier())
+
+    const transaction = await BlogFeedContract.createFeed(
       "Hello World",
       "New York world",
-      "New York",
+      "Sports",
+      "0x123",
+      "2022-05-05",  
+      bytes32Greeting,
+        merkleProof.root,
+        nullifierHash, 
+        merkleProof.root,
+        solidityProof
+    )
+    console.log(await transaction.wait())
+    expect(tx.hash).to.not.be.null;
+    //await expect(transaction).to.emit(contract, "NewGreeting").withArgs(bytes32Greeting)*/
+})
+
+  it("should be able to create feed", async () => {
+    const tx = await BlogFeedContract.createFeed(
+      "Hello World",
+      "New York world",
       "Sports",
       "0x123",
       "2022-05-05"
@@ -34,93 +102,41 @@ describe("Blog", function () {
   });
 
   it("should be able to get feeds", async () => {
-    const tx = await newsFeedContract.createFeed(
+    const tx = await BlogFeedContract.createFeed(
       "Hello World",
       "New York world",
-      "New York",
       "Sports",
       "0x123",
       "2022-05-05"
     );
 
     // get feeds
-    const feeds = await newsFeedContract.getAllFeeds();
+    const feeds = await BlogFeedContract.getAllFeeds();
     expect(feeds.length).to.equal(2);
   });
 
   it("should be able to get feed count", async () => {
-    const tx = await newsFeedContract.createFeed(
+    const tx = await BlogFeedContract.createFeed(
       "Hello World",
       "New York world",
-      "New York",
       "Sports",
       "0x123",
       "2022-05-05"
     );
-    const newsCount = await newsFeedContract.getTotalFeeds();
+    const newsCount = await BlogFeedContract.getTotalFeeds();
     expect(newsCount.toString()).to.equal("3");
   });
 
   it("should be able to get feed by id", async () => {
-    const tx = await newsFeedContract.createFeed(
+    const tx = await BlogFeedContract.createFeed(
       "Hello World",
       "New York world",
-      "New York",
       "Sports",
       "0x123",
       "2022-05-05"
     );
-    const news = await newsFeedContract.getFeed(2);
+    const news = await BlogFeedContract.getFeed(2);
     expect(news.title).to.equal("Hello World");
   });
 });
-// import { Strategy, ZkIdentity } from "@zk-kit/identity"
-// import { generateMerkleProof, Semaphore } from "@zk-kit/protocols"
-// import { expect } from "chai"
-// import { Contract, Signer } from "ethers"
-// import { ethers, run } from "hardhat"
-// import identityCommitments from "../public/identityCommitments.json"
-
-// describe("Greeters", function () {
-//     let contract: Contract
-//     let contractOwner: Signer
-
-//     before(async () => {
-//         contract = await run("deploy", { logs: false })
-
-//         const signers = await ethers.getSigners()
-//         contractOwner = signers[0]
-//     })
-
-//     describe("# greet", () => {
-//         const wasmFilePath = "./public/semaphore.wasm"
-//         const finalZkeyPath = "./public/semaphore_final.zkey"
-
-//         it("Should greet", async () => {
-//             const message = await contractOwner.signMessage("Sign this message to create your identity!")
-
-//             const identity = new ZkIdentity(Strategy.MESSAGE, message)
-//             const identityCommitment = identity.genIdentityCommitment()
-//             const greeting = "Hello world"
-//             const bytes32Greeting = ethers.utils.formatBytes32String(greeting)
-
-//             const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, identityCommitment)
-//             const witness = Semaphore.genWitness(
-//                 identity.getTrapdoor(),
-//                 identity.getNullifier(),
-//                 merkleProof,
-//                 merkleProof.root,
-//                 greeting
-//             )
-
-//             const fullProof = await Semaphore.genProof(witness, wasmFilePath, finalZkeyPath)
-//             const solidityProof = Semaphore.packToSolidityProof(fullProof.proof)
-
-//             const nullifierHash = Semaphore.genNullifierHash(merkleProof.root, identity.getNullifier())
-
-//             const transaction = contract.greet(bytes32Greeting, nullifierHash, solidityProof)
-
-//             await expect(transaction).to.emit(contract, "NewGreeting").withArgs(bytes32Greeting)
-//         })
-//     })
-// })
+})

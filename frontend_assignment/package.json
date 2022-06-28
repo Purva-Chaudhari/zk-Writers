@@ -22,7 +22,7 @@
         "@metamask/detect-provider": "^1.2.0",
         "@mui/material": "^5.8.1",
         "@zk-kit/identity": "^1.4.1",
-        "@zk-kit/protocols": "^1.11.0",
+        "@zk-kit/protocols": "^1.11.1",
         "assert": "^2.0.0",
         "ipfs-http-client": "^57.0.3",
         "next": "12.0.10",
@@ -32,6 +32,7 @@
         "react-hook-form": "^7.31.3",
         "react-icons": "^4.4.0",
         "react-toastify": "^9.0.5",
+        "rebuild": "^0.1.2",
         "web3.storage": "^4.3.0",
         "yup": "^0.32.11"
     },
