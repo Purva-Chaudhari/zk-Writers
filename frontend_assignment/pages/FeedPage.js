@@ -117,7 +117,8 @@ export default function FeedPage() {
             </h4>
             {relatedFeeds.map((f) => {
               return (
-              <Link
+                <col key = {f.id} sm="4">
+                <Link
                   onClick={() => {
                     setFeed(f);
                   }}
@@ -125,6 +126,8 @@ export default function FeedPage() {
                 >
                   <FeedList feed={f} horizontal={true} />
                 </Link>
+                </col>
+              
               );
             })}
           </div>

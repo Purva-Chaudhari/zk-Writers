@@ -6,6 +6,9 @@ import { ToastContainer } from "react-toastify";
 
 import { success, error, defaultToast } from "./utilities/response";
 import { Web3Storage, getFilesFromPath } from 'web3.storage'  
+import { providers,Contract, utils } from "ethers"
+import { Strategy, ZkIdentity } from "@zk-kit/identity"
+import { generateMerkleProof, Semaphore } from "@zk-kit/protocols"
 import config from "./config.json"
 //import * as dotenv from "dotenv"
 //dotenv.config()
@@ -27,6 +30,68 @@ import config from "./config.json"
 
  }
 
+ async function getAllMembers(id){
+  let response = await fetch("http://localhost:8000/getAllLeaves")
+  let result = await response.json()
+  return result["leaves"]
+}
+async function login(){
+  const message = "Make me anonymous"
+  await window.ethereum.request({ method: 'eth_requestAccounts' });
+  const provider = new providers.Web3Provider(window.ethereum)
+  const signer = provider.getSigner()
+  const signature = await signer.signMessage(message)
+  const address = await signer.getAddress()
+
+
+  const identity = new ZkIdentity(Strategy.MESSAGE, signature)
+  const identityCommitment = identity.genIdentityCommitment()
+  const identityCommitments = await getAllMembers(identityCommitment)
+  const indexIdentityCommitment = identityCommitments.indexOf(identityCommitment)
+
+  const merkleProof = generateMerkleProof(
+      20, 
+      0, 
+      identityCommitments, 
+      identityCommitment
+  )
+
+  const signal = "Adding feed"
+  let externalNullifier = BigInt(Math.floor((Math.random() * 2**256) + 1))
+  const witness = Semaphore.genWitness(
+      identity.getTrapdoor(),
+      identity.getNullifier(),
+      merkleProof,
+      merkleProof.root,
+      signal
+  )
+
+  const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore.zkey")
+  const solidityProof = Semaphore.packToSolidityProof(proof)
+  let root = merkleProof.root.toString()
+  let nullifierHash = publicSignals.nullifierHash
+  
+  let response = await fetch("http://localhost:8000/login",{
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          signal: signal,
+          root: merkleProof.root.toString(),
+          nullifierHash: publicSignals.nullifierHash.toString(),
+          externalNullifier: publicSignals.externalNullifier.toString(),
+          proof: solidityProof
+      })
+  })
+  let result = await response.json()
+  if(result["sucess"]){
+      window.location = `http://3rdpartywebsite.one/?commitmentId=${identityCommitment}`
+  }
+  
+
+}
 export default function Upload() {
   /*
    * A state variable we use to store new feed input.
@@ -52,7 +117,6 @@ export default function Upload() {
       title === "" ||
       description === "" ||
       category === "" ||
-      location === "" ||
       coverImage === ""
     ) {
       error("Please, all the fields are required!");

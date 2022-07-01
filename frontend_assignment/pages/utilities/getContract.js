@@ -8,8 +8,8 @@ export default function getContract() {
   const signer = provider.getSigner();
   console.log("Signer : ",signer)
   let contract = new ethers.Contract(
-    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    //"0x385c3494C8FBE18F952032230d6618D2911E85cc",
+    //"0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     ContractAbi.abi,
     signer,
   );
