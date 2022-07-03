@@ -3,12 +3,24 @@ import getContract from "./utilities/getContract";
 import Link from "next/link";
 import FeedList from "./components/FeedList";
 import Feed from "./components/Feed";
+import config from "./config.json";
+import { Web3Storage } from 'web3.storage';
+
+async function retrieveFiles (cid) {
+  const token = config.API_TOKEN
+  const client = new Web3Storage({ token })
+  const res = await client.get(cid)
+  const files = await res.files()
+  return files[0].name
+}
 
 export default function FeedPage() {
   const [relatedFeeds, setRelatedFeeds] = useState([]);
 
   // state variable to store the current feed
   const [feed, setFeed] = useState([]);
+
+  const [cid, setCid] = useState({});
 
   // Function to get the feed id from the url
   const getUrlValue = () => {
@@ -36,11 +48,8 @@ export default function FeedPage() {
         id: singleFeed[0],
         title: singleFeed[1],
         description: singleFeed[2],
-        location: singleFeed[3],
-        category: singleFeed[4],
-        coverImageHash: singleFeed[5],
-        date: singleFeed[6],
-        author: singleFeed[7],
+        category: singleFeed[3],
+        coverImageHash: singleFeed[4],
       };
 
       setFeed(formattedFeed);
@@ -67,11 +76,9 @@ export default function FeedPage() {
         id: singleFeed[0],
         title: singleFeed[1],
         description: singleFeed[2],
-        location: singleFeed[3],
-        category: singleFeed[4],
-        coverImageHash: singleFeed[5],
-        date: singleFeed[6],
-        author: singleFeed[7],
+        category: singleFeed[3],
+        coverImageHash: singleFeed[4],
+        date: singleFeed[5],
       };
       const relatedFeeds = allFeeds.filter(
         (feed) => feed.category === formattedSingleFeed.category
@@ -82,10 +89,8 @@ export default function FeedPage() {
           id: feed.id,
           title: feed.title,
           description: feed.description,
-          location: feed.location,
           category: feed.category,
           coverImageHash: feed.coverImageHash,
-          author: feed.author,
           date: feed.date,
         };
       });
@@ -99,13 +104,19 @@ export default function FeedPage() {
   useEffect(() => {
     getFeed();
     getRelatedFeeds();
+    
+    const hash = feed.coverImageHash;  
+    retrieveFiles(hash)
+     .then((fn) => setCid(fn))
+     console.log("In feedPage")
+     console.log(cid)
   }, []);
 
   return (
     <div className="w-full  flex flex-row">
       <div className="flex-1 flex flex-col">
         <div className="flex flex-col m-10 justify-between lg:flex-row">
-          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed} />}</div>
+          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed} cid={cid} />}</div>
           <div className="w-2/6">
             <h4 className="text-xl font-bold dark:text-white ml-5 mb-3 text-black">
               Related Feeds
@@ -124,7 +135,7 @@ export default function FeedPage() {
                   }}
                   to={`/FeedPage?id=${f.id}`}
                 >
-                  <FeedList feed={f} horizontal={true} />
+                  <FeedList feed={f} cid={cid} horizontal={true} />
                 </Link>
                 </col>
               

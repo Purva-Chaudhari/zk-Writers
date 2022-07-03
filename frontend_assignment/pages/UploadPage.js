@@ -9,7 +9,9 @@ import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import { providers,Contract, utils } from "ethers"
 import { Strategy, ZkIdentity } from "@zk-kit/identity"
 import { generateMerkleProof, Semaphore } from "@zk-kit/protocols"
-import config from "./config.json"
+import config from "./config.json";
+import { ethers } from "ethers";
+
 //import * as dotenv from "dotenv"
 //dotenv.config()
 //console.log()
@@ -17,90 +19,29 @@ import config from "./config.json"
 //const token = process.env.API_TOKEN
  const client = new Web3Storage({ token })
 
- 
+ async function getAllMembers(id){
+  // let response = await fetch("http://localhost:8000/getAllLeaves")
+  // let result = await response.json()
+  // return result["leaves"]
+  return [id]
+}
 
  async function storeFiles (file) {
-   console.log("In store files")
    const files = [file]
 
    const cid = await client.put(files)
 
-   console.log(cid) 
    return cid;
 
  }
 
- async function getAllMembers(id){
-  let response = await fetch("http://localhost:8000/getAllLeaves")
-  let result = await response.json()
-  return result["leaves"]
-}
-async function login(){
-  const message = "Make me anonymous"
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
-  const provider = new providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
-  const signature = await signer.signMessage(message)
-  const address = await signer.getAddress()
-
-
-  const identity = new ZkIdentity(Strategy.MESSAGE, signature)
-  const identityCommitment = identity.genIdentityCommitment()
-  const identityCommitments = await getAllMembers(identityCommitment)
-  const indexIdentityCommitment = identityCommitments.indexOf(identityCommitment)
-
-  const merkleProof = generateMerkleProof(
-      20, 
-      0, 
-      identityCommitments, 
-      identityCommitment
-  )
-
-  const signal = "Adding feed"
-  let externalNullifier = BigInt(Math.floor((Math.random() * 2**256) + 1))
-  const witness = Semaphore.genWitness(
-      identity.getTrapdoor(),
-      identity.getNullifier(),
-      merkleProof,
-      merkleProof.root,
-      signal
-  )
-
-  const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore.zkey")
-  const solidityProof = Semaphore.packToSolidityProof(proof)
-  let root = merkleProof.root.toString()
-  let nullifierHash = publicSignals.nullifierHash
-  
-  let response = await fetch("http://localhost:8000/login",{
-      method: "POST",
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          signal: signal,
-          root: merkleProof.root.toString(),
-          nullifierHash: publicSignals.nullifierHash.toString(),
-          externalNullifier: publicSignals.externalNullifier.toString(),
-          proof: solidityProof
-      })
-  })
-  let result = await response.json()
-  if(result["sucess"]){
-      window.location = `http://3rdpartywebsite.one/?commitmentId=${identityCommitment}`
-  }
-  
-
-}
 export default function Upload() {
   /*
    * A state variable we use to store new feed input.
    */
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
   const [coverImage, setCoverImage] = useState("");
 
   /*
@@ -146,8 +87,6 @@ export default function Upload() {
        * Save the new feed to the blockchain
        */
       const image = await storeFiles(coverImage); 
-      console.log(image)
-      console.log(coverImage)
       await saveFeed(image);
     } catch (err) {
       error("Error Uploading Cover Image");
@@ -160,11 +99,45 @@ export default function Upload() {
   const saveFeed = async (coverImage) => {
     defaultToast("Saving Feed...");
 
-    console.log(title, description, category, location, coverImage);
-   
-    
+    console.log(title, description, category, coverImage);    
 
     try {
+      const message = "Create feed: zkWriter";
+      const provider = new providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const signature = await signer.signMessage(message)
+      const address = await signer.getAddress()
+
+
+const identity = new ZkIdentity(Strategy.MESSAGE, signature)
+const identityCommitment = identity.genIdentityCommitment()
+const identityCommitments = await getAllMembers(identityCommitment)
+const indexIdentityCommitment = identityCommitments.indexOf(identityCommitment)
+
+const merkleProof = generateMerkleProof(
+    20, 
+    0, 
+    identityCommitments, 
+    identityCommitment
+)
+
+const signal = "Hello World!"
+console.log("In upload")
+const bytes32Greeting = ethers.utils.formatBytes32String(signal)
+
+const witness = Semaphore.genWitness(
+    identity.getTrapdoor(),
+    identity.getNullifier(),
+    merkleProof,
+    merkleProof.root,
+    signal
+)
+
+const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore_final.zkey")
+const solidityProof = Semaphore.packToSolidityProof(proof)
+let root = merkleProof.root.toString()
+let nullifierHash = publicSignals.nullifierHash
+ 
   
       const contract = await getContract();
       const UploadedDate = String(new Date());
@@ -176,12 +149,15 @@ export default function Upload() {
       await contract.createFeed(
         title,
         description,
-        location,
         category,
         coverImage,
-        UploadedDate
+        UploadedDate,
+        bytes32Greeting,
+        merkleProof.root,
+        nullifierHash, 
+        merkleProof.root,
+        solidityProof
       );
-      console.log("Stage 1")
 
       success("Feed Saved Successfully");
 
@@ -189,7 +165,6 @@ export default function Upload() {
       setTitle("");
       setDescription("");
       setCategory("");
-      setLocation("");
       setCoverImage("");
 
       // Redirect to Home Page

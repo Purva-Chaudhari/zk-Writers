@@ -110,6 +110,7 @@ contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
         uint256 _nullifierHash,
         uint256 externalNullifier,
         uint256[8] calldata _proof
+
     ) public {
         // Validation
         require(bytes(_coverImageHash).length > 0);

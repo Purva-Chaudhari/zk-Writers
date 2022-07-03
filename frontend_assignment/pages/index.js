@@ -11,19 +11,30 @@ import FeedList from "./components/FeedList";
 import Link from "next/link"
 import getContract from "./utilities/getContract";
 import ether from "ethers";
-
+import config from "./config.json";
 import { success, error, warn } from "./utilities/response";
 
 import "react-toastify/dist/ReactToastify.css";
-//const { ethers } = require("hardhat");
 const { port } = require('./config');
 console.log(`Your port is ${port}`); // 8626
 
+import { Web3Storage } from 'web3.storage';
 
+async function retrieveFiles (cid) {
+  const token = config.API_TOKEN
+  const client = new Web3Storage({ token })
+  const res = await client.get(cid)
+  const files = await res.files()
+  return files[0].name
+}
 
 export default function Main() {
+  console.log("in main")
   const [loading, setLoading] = useState(false);
   const [loadingArray] = useState(15);
+
+  const [cid, setCid] = useState([]);
+  const [cidTemp, setCidTemp] = useState({});
 
   // Create a state variable to store the feeds in the blockchain
   const [feeds, setFeeds] = useState([]);
@@ -48,8 +59,6 @@ export default function Main() {
       if (accounts.length !== 0) {
         const account = accounts[0];
         setCurrentAccount(account);
-        console.log("rishabh  ")
-        console.log(account)
         success("🦄 Wallet is Connected!");
       } else {
         success("Welcome 🎉  ");
@@ -63,8 +72,6 @@ export default function Main() {
   /**
    * Implement your connectWallet method here
    */   
-
-  console.log("Redirected at home")
   const connectWallet = async () => {
     try {
       const { ethereum } = window;
@@ -73,75 +80,8 @@ export default function Main() {
         warn("Make sure you have MetaMask Connected");
         return;
       }
-      console.log("Connect wallet transaction ")
       const accounts = await ethereum.request({method: "eth_requestAccounts"});
-      setCurrentAccount(accounts[0]);
-      const provider = new providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
-  const signature = await signer.signMessage(message)
-  const address = await signer.getAddress()
-
-
-  const identity = new ZkIdentity(Strategy.MESSAGE, signature)
-  const identityCommitment = identity.genIdentityCommitment()
-  const identityCommitments = await getAllMembers(identityCommitment)
-  const indexIdentityCommitment = identityCommitments.indexOf(identityCommitment)
-
-  const merkleProof = generateMerkleProof(
-      20, 
-      0, 
-      identityCommitments, 
-      identityCommitment
-  )
-
-  const signal = "Adding feed"
-  const witness = Semaphore.genWitness(
-      identity.getTrapdoor(),
-      identity.getNullifier(),
-      merkleProof,
-      merkleProof.root,
-      signal
-  )
-
-  const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore.zkey")
-  const solidityProof = Semaphore.packToSolidityProof(proof)
-  let root = merkleProof.root.toString()
-  let nullifierHash = publicSignals.nullifierHash
-
-  const BlogFeedContract = await ethers.getContractFactory('Blog')
-
-  const transaction = await BlogFeedContract.createFeed(
-    "Hello World",
-    "New York world",
-    "Sports",
-    "0x123",
-    "2022-05-05",  
-    bytes32Greeting,
-      merkleProof.root,
-      nullifierHash, 
-      merkleProof.root,
-      solidityProof
-  )
-  console.log(await transaction.wait())
-  console.log("Connect wallet transaction end")
-  
-  
-  // let response = await fetch("http://localhost:8000/login",{
-  //     method: "POST",
-  //     headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //         signal: signal,
-  //         root: merkleProof.root.toString(),
-  //         nullifierHash: publicSignals.nullifierHash.toString(),
-  //         externalNullifier: publicSignals.externalNullifier.toString(),
-  //         proof: solidityProof
-  //     })
-  // })
-
-
+    setCurrentAccount(accounts[0]);
     } catch (err) {
       error(`${err.message}`);
     }
@@ -150,13 +90,10 @@ export default function Main() {
   /*
    * Get Feeds
    */
-  console.log("Stage 1");
   const getFeeds = async () => {
     try {
       setLoading(true);
       const contract = await getContract();
-      console.log("Stage 2");
-      console.log(contract)
       const AllFeeds = await contract.getAllFeeds();
       console.log("Stage 3 ");
       console.log(AllFeeds.length)
@@ -166,18 +103,26 @@ export default function Main() {
        * We only need title, category, coverImageHash, and author
        * pick those out
        */
+      let cidarr = []
       const formattedFeed = AllFeeds.map((feed) => {
-        console.log(feed.coverImageHash)
+        retrieveFiles(feed.coverImageHash)
+          .then((fn) => setCidTemp(fn))
+          console.log("cid temp")
+          console.log(cidTemp)
+        cidarr.push(cidTemp)
         return {
           id: feed.id,
           title: feed.title,
           category: feed.category,
           coverImageHash: feed.coverImageHash,
-          author: feed.author,
           date: new Date(feed.date * 1000),
         };
       });
+      
+      console.log("Check cid array")
+      console.log(cidarr)
       setFeeds(formattedFeed);
+      setCid(cidarr)
       setLoading(false);
     } catch (err) {
       error(`${err.message}`);
@@ -190,15 +135,8 @@ export default function Main() {
   useEffect(() => {
     getFeeds();
     checkIfWalletIsConnected();
+    console.log("In useeffect")
 
-    /*
-     * This is a hack to make sure we only run the function once.
-     * We need to do this because we're using the useEffect hook.
-     * We can't use the useEffect hook more than once.
-     * https://reactjs.org/docs/hooks-effect.html
-     * https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-the-effects-api
-     * https://reactjs.org/docs/hooks-faq.html#how-do-i-optimize-the-effects-of-a-component
-     */
     const onFeedCreated = async (
       id,
       title,
@@ -206,11 +144,6 @@ export default function Main() {
       category,
       coverImageHash,
       date,
-      signal,
-      root,
-      _nullifierHash,
-      externalNullifier,
-      _proof
     ) => {
       setFeeds((prevState) => [
         ...prevState,
@@ -221,27 +154,23 @@ export default function Main() {
           category,
           coverImageHash,
           date,
-          signal,
-          root,
-          _nullifierHash,
-          externalNullifier,
-          _proof
         },
       ]);
     };
+    let contract;
 
-    // let contract;
+    if (window.ethereum) {
+      contract = getContract();
+      console.log("How many times")
+     // contract.on("FeedCreated", onFeedCreated);
+    }
 
-    // if (window.ethereum) {
-    //   contract = getContract();
-    //   contract.on("FeedCreated", onFeedCreated);
-    // }
-
-    // return () => {
-    //   if (contract) {
-    //     contract.off("FeedCreated", onFeedCreated);
-    //   }
-    // };
+    return () => {
+      if (contract) {
+        console.log("Return")
+        contract.off("FeedCreated", onFeedCreated);
+      }
+    };
   }, []);
 
   return (
@@ -261,11 +190,12 @@ export default function Main() {
             return (
               <Link href={`/FeedPage?id=${feed.id}`} key={index}>
                 <div className="w-80 h-80 m-2">
-                  <FeedList feed={feed} />
+                  <FeedList feed={feed} cid={cid[index]} />
                 </div>
               </Link>
             );
-          })}
+          })
+        }
           {loading && (
             <div className="flex-1 flex flex-row flex-wrap">
               {Array(loadingArray)

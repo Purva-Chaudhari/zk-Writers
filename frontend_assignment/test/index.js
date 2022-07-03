@@ -65,7 +65,9 @@ describe("Blog", function () {
           merkleProof.root,
           solidityProof
       )
-      console.log(await transaction.wait())
+     // console.log(await transaction.wait())
+     const v= await BlogFeedContract.getTotalFeeds()
+      console.log(v)
       expect(tx.hash).to.not.be.null;
 
 
