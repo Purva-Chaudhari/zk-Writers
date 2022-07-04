@@ -9,10 +9,9 @@ import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import { providers,Contract, utils } from "ethers"
 import { Strategy, ZkIdentity } from "@zk-kit/identity"
 import { generateMerkleProof,genExternalNullifier, Semaphore } from "@zk-kit/protocols"
-import config from "./config.json";
 import { ethers } from "ethers";
 
- const token = config.API_TOKEN
+ const token = process.env.API_TOKEN
 //const token = process.env.API_TOKEN
  const client = new Web3Storage({ token })
 
@@ -94,13 +93,13 @@ export default function Upload() {
    * A function to save a new feed to the blockchain
    */
   const saveFeed = async (coverImage) => {
-    defaultToast("Saving Feed...");
+    defaultToast("Saving Feed..."); 
 
     console.log(title, description, category, coverImage);  
 
     try{  
-    const message = "Create feed anonymously: zkWriter"
-    //await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const message = "Make me anonymous"
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)

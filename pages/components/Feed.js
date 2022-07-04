@@ -2,7 +2,6 @@ import React from "react";
 import { BiCheck } from "react-icons/bi";
 import { useState } from "react";
 import { Web3Storage, makeStorageClient } from 'web3.storage';
-import config from "../config.json";  
 
 import {
   AiFillTwitterCircle,
@@ -11,7 +10,7 @@ import {
 } from "react-icons/ai";
 
 async function retrieveFiles (cid) {
-  const token = config.API_TOKEN
+  const token = process.env.API_TOKEN
   const client = new Web3Storage({ token })
   const res = await client.get(cid)
   console.log(`Got a response! [${res.status}] ${res.statusText}`)

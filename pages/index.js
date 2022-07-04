@@ -11,13 +11,11 @@ import FeedList from "./components/FeedList";
 import Link from "next/link"
 import getContract from "./utilities/getContract";
 import ether from "ethers";
-import config from "./config.json";
 import { success, error, warn } from "./utilities/response";
 
 import "react-toastify/dist/ReactToastify.css";
 import { BiChevronsUp } from "react-icons/bi"
-const { port } = require('./config');
-console.log(`Your port is ${port}`); // 8626
+
 
 export default function Main() {
   //console.log("in main")
