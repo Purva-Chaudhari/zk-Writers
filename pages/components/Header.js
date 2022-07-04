@@ -7,7 +7,7 @@ import { providers,Contract, utils } from "ethers"
 import Head from "next/head"
 import { useState, useEffect } from "react"
 import { setCookie, hasCookie, getCookie} from 'cookies-next';
-import { success, error, warn } from "./utilities/response";
+import { success, error, warn } from "../utilities/response";
 
 export const Header = ({connectWallet, ToastContainer }) => {
   async function register(){

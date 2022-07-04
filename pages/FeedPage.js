@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useState } from "react";
 import getContract from "./utilities/getContract";
 import Link from "next/link";
-import Feed from "../components/Feed";
+import Feed from "./components/Feed";
 
 export default function FeedPage (){
 

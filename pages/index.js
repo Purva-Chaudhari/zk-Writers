@@ -7,7 +7,7 @@ import React from "react"
 import { useState, useEffect } from "react"
 import { Header } from "./components/Header";
 import { ToastContainer } from "react-toastify";
-import FeedList from "../components/FeedList";
+import FeedList from "./components/FeedList";
 import Link from "next/link"
 import getContract from "./utilities/getContract";
 import ether from "ethers";
