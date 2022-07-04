@@ -9,6 +9,8 @@ const nextConfig = {
         API_TOKEN:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4MDU1NmE5NzM0RTkyNGJGRDFkNjA4QjA1QTk3OGIyQmY2RjhkMWMiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTYyNTE1NjUxMjUsIm5hbWUiOiJaSy1Xcml0ZXJzIn0.kMlCoMmwOKS0x6UU2hi5ZBGcK_cWjfC9n2-qpfIbB_k"
     },
 
+    pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
+
     reactStrictMode: true,
     webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
         if (!isServer) {

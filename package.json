@@ -45,6 +45,7 @@
         "react-toastify": "^9.0.5",
         "rebuild": "^0.1.2",
         "utf8": "^3.0.0",
+        "vercel": "^25.2.3",
         "web3.storage": "^4.3.0",
         "yup": "^0.32.11",
         "zlib": "^1.0.5"

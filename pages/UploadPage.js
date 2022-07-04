@@ -1,7 +1,5 @@
 import React, { useState, useRef } from "react";
-import { create } from "ipfs-http-client";
 import { BiCloud, BiPlus } from "react-icons/bi";
-import getContract from "./utilities/getContract";
 import { ToastContainer } from "react-toastify";
 
 import { success, error, defaultToast } from "./utilities/response";
