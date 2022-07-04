@@ -1,7 +1,7 @@
 const express = require("express")
 const ethers = require("ethers")
 const dotenv = require("dotenv")
-const zkOauthABI = require("./ZKOauth.json")
+const zkWritersABI = require("../../pages/utilities/Blog.json")
 const cors = require("cors")
 const fs = require('fs');
 var bodyParser = require('body-parser')
@@ -24,7 +24,7 @@ function getContract() {
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
   const contract = new ethers.Contract(
     ZK_CONTRACT_ADDRESS,
-    zkOauthABI['abi'],
+    zkWritersABI['abi'],
     wallet
   );
   return contract;

@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import getContract from "./utilities/getContract";
 import Link from "next/link";
 import FeedList from "./components/FeedList";
 import Feed from "./components/Feed";
-import config from "./config.json";
-import { Web3Storage } from 'web3.storage';
 
-async function retrieveFiles (cid) {
-  const token = config.API_TOKEN
-  const client = new Web3Storage({ token })
-  const res = await client.get(cid)
-  const files = await res.files()
-  return files[0].name
-}
+export default function FeedPage (){
 
-export default function FeedPage() {
   const [relatedFeeds, setRelatedFeeds] = useState([]);
 
   // state variable to store the current feed
   const [feed, setFeed] = useState([]);
-
-  const [cid, setCid] = useState({});
 
   // Function to get the feed id from the url
   const getUrlValue = () => {
@@ -31,6 +20,8 @@ export default function FeedPage() {
         vars[key] = value;
       }
     );
+    console.log("Check ID Feedpage")
+    console.log(vars)
     return vars;
   };
 
@@ -41,7 +32,8 @@ export default function FeedPage() {
     try {
       const contract = await getContract();
       let feedId = getUrlValue()["id"];
-      const singleFeed = await contract.getFeed(feedId);
+      console.log("CHeck feed id ",feedId)
+      const singleFeed = await contract.getFeed(feedId-1);
 
       // Format feed
       const formattedFeed = {
@@ -58,6 +50,18 @@ export default function FeedPage() {
     }
   };
 
+  const [likes, setLikes] = useState(0);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    if (isClicked) {
+      setLikes(likes - 1);
+    } else {
+      setLikes(likes + 1);
+    }
+    setIsClicked(!isClicked);
+  };
+
   /*
    * Get Related Feeds
    */
@@ -70,7 +74,7 @@ export default function FeedPage() {
       // Get all feeds and return feeds and filter only the one in the same category as the feed
       const allFeeds = await contract.getAllFeeds();
       console.log(allFeeds);
-      const singleFeed = await contract.getFeed(feedId);
+      const singleFeed = await contract.getFeed(feedId-1);
       // Format feed
       const formattedSingleFeed = {
         id: singleFeed[0],
@@ -104,29 +108,26 @@ export default function FeedPage() {
   useEffect(() => {
     getFeed();
     getRelatedFeeds();
-    
-    const hash = feed.coverImageHash;  
-    retrieveFiles(hash)
-     .then((fn) => setCid(fn))
-     console.log("In feedPage")
-     console.log(cid)
   }, []);
 
   return (
     <div className="w-full  flex flex-row">
       <div className="flex-1 flex flex-col">
         <div className="flex flex-col m-10 justify-between lg:flex-row">
-          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed} cid={cid} />}</div>
+          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed}/>}</div>
           <div className="w-2/6">
             <h4 className="text-xl font-bold dark:text-white ml-5 mb-3 text-black">
-              Related Feeds
+              {/* Related Feeds */}
+              <button className={ `like-button ${isClicked && 'liked'}` } onClick={ handleClick }>
+                <span className="likes-counter">{ `❤️ Like | ${likes}` }</span>
+              </button>
               <Link href="/">
                 <button className="bg-red-600 hover:bg-red-800 text-white font-bold px-2 rounded ml-10">
                   Go Back
                 </button>
               </Link>
             </h4>
-            {relatedFeeds.map((f) => {
+            {/* {relatedFeeds.map((f) => {
               return (
                 <col key = {f.id} sm="4">
                 <Link
@@ -135,12 +136,12 @@ export default function FeedPage() {
                   }}
                   to={`/FeedPage?id=${f.id}`}
                 >
-                  <FeedList feed={f} cid={cid} horizontal={true} />
+                  <FeedList feed={f} horizontal={true} />
                 </Link>
                 </col>
               
               );
-            })}
+            })} */}
           </div>
         </div>
       </div>

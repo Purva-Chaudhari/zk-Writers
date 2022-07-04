@@ -8,7 +8,7 @@ import Head from "next/head"
 import { useState, useEffect } from "react"
 import { setCookie, hasCookie, getCookie} from 'cookies-next';
 
-export const Header = ({ currentAccount, connectWallet, ToastContainer }) => {
+export const Header = ({connectWallet, ToastContainer }) => {
   async function register(){
     connectWallet()
     const message = "Make me anonymous"
@@ -50,11 +50,11 @@ const cookieB = hasCookie("id");
     <header className="w-full flex justify-between h-20 items-center border-b p-4 border-borderWhiteGray dark:border-borderGray">
       <div className=" w-1/3">
         <Link href="/" className="flex items-center">
-          <h1 className="text-2xl font-bold text-green-700">Home</h1>
+          <h1 className="text-4xl font-bold text-black-700 italic">Zk-Writers 🖊️</h1>
         </Link>
       </div>
       <div className=" w-1/3 flex justify-center items-center">
-        <h1 className="text-2xl font-bold text-green-500 dark:text-green-400">
+        <h1 className="text-2xl font-bold text-black-500 dark:text-black-400">
           Blog Feed!
         </h1>
       </div>
@@ -62,7 +62,7 @@ const cookieB = hasCookie("id");
       {cookieB && connectWallet? (
         <div className="w-1/3 flex justify-end items-center">
           <Link href="/UploadPage">
-            <button className="items-center bg-green-600 rounded-full font-medium p-2 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white">
+            <button className="items-center bg-violet-700 rounded-full font-medium p-2 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white">
               <span className="">Create a New Feed</span>
             </button>
           </Link>
@@ -70,7 +70,7 @@ const cookieB = hasCookie("id");
       ) : (
         <div className=" w-1/3 flex justify-end gap-3">
           <button
-            className="items-center bg-green-700 rounded-full font-medium p-3 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white"
+            className="items-center bg-violet-700 rounded-full font-medium p-3 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white"
             onClick={() => {
               connectWallet();
             }}

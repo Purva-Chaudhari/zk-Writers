@@ -12,7 +12,6 @@ contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
     uint256 groupId = 0;
     uint8 depth = 20;
     uint256 totalFeeds;
-    uint x;
     using Counters for Counters.Counter;
     Counters.Counter private _feedIds;
 

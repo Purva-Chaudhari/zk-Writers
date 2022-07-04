@@ -18,31 +18,13 @@ import "react-toastify/dist/ReactToastify.css";
 const { port } = require('./config');
 console.log(`Your port is ${port}`); // 8626
 
-import { Web3Storage } from 'web3.storage';
-
-async function retrieveFiles (cid) {
-  const token = config.API_TOKEN
-  const client = new Web3Storage({ token })
-  const res = await client.get(cid)
-  const files = await res.files()
-  return files[0].name
-}
-
 export default function Main() {
-  console.log("in main")
+  //console.log("in main")
   const [loading, setLoading] = useState(false);
   const [loadingArray] = useState(15);
 
-  const [cid, setCid] = useState([]);
-  const [cidTemp, setCidTemp] = useState({});
-
   // Create a state variable to store the feeds in the blockchain
   const [feeds, setFeeds] = useState([]);
-
-  /*
-   * A state variable we use to store our user's public wallet.
-   */
-  const [currentAccount, setCurrentAccount] = useState("");
 
   /*
    * A function to check if a user wallet is connected.
@@ -57,8 +39,6 @@ export default function Main() {
       const accounts = await ethereum.request({ method: "eth_accounts" });
 
       if (accounts.length !== 0) {
-        const account = accounts[0];
-        setCurrentAccount(account);
         success("🦄 Wallet is Connected!");
       } else {
         success("Welcome 🎉  ");
@@ -81,7 +61,6 @@ export default function Main() {
         return;
       }
       const accounts = await ethereum.request({method: "eth_requestAccounts"});
-    setCurrentAccount(accounts[0]);
     } catch (err) {
       error(`${err.message}`);
     }
@@ -95,8 +74,8 @@ export default function Main() {
       setLoading(true);
       const contract = await getContract();
       const AllFeeds = await contract.getAllFeeds();
-      console.log("Stage 3 ");
-      console.log(AllFeeds.length)
+      //console.log("Stage 3 ");
+      //console.log(AllFeeds.length)
       
       
       /*
@@ -105,24 +84,16 @@ export default function Main() {
        */
       let cidarr = []
       const formattedFeed = AllFeeds.map((feed) => {
-        retrieveFiles(feed.coverImageHash)
-          .then((fn) => setCidTemp(fn))
-          console.log("cid temp")
-          console.log(cidTemp)
-        cidarr.push(cidTemp)
         return {
           id: feed.id,
           title: feed.title,
           category: feed.category,
+          description: feed.description,
           coverImageHash: feed.coverImageHash,
           date: new Date(feed.date * 1000),
         };
       });
-      
-      console.log("Check cid array")
-      console.log(cidarr)
       setFeeds(formattedFeed);
-      setCid(cidarr)
       setLoading(false);
     } catch (err) {
       error(`${err.message}`);
@@ -135,7 +106,7 @@ export default function Main() {
   useEffect(() => {
     getFeeds();
     checkIfWalletIsConnected();
-    console.log("In useeffect")
+    //console.log("In useeffect")
 
     const onFeedCreated = async (
       id,
@@ -161,7 +132,7 @@ export default function Main() {
 
     if (window.ethereum) {
       contract = getContract();
-      console.log("How many times")
+      //console.log("How many times")
      // contract.on("FeedCreated", onFeedCreated);
     }
 
@@ -181,7 +152,6 @@ export default function Main() {
     <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
     <div className="m-8 relative space-y-4">
         <Header
-          currentAccount={currentAccount}
           connectWallet={connectWallet}
           ToastContainer={ToastContainer}
         />
@@ -190,7 +160,7 @@ export default function Main() {
             return (
               <Link href={`/FeedPage?id=${feed.id}`} key={index}>
                 <div className="w-80 h-80 m-2">
-                  <FeedList feed={feed} cid={cid[index]} />
+                  <FeedList feed={feed} />
                 </div>
               </Link>
             );
