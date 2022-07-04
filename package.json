@@ -1,13 +1,9 @@
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
   "name": "zk-writers",
   "version": "1.0.0",
   "description": "ZKU Final Project",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Purva-Chaudhari/zk-Writers.git"
@@ -19,23 +15,8 @@
     "url": "https://github.com/Purva-Chaudhari/zk-Writers/issues"
   },
   "homepage": "https://github.com/Purva-Chaudhari/zk-Writers#readme",
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.6",
-    "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "@openzeppelin/contracts": "^4.6.0",
-    "chai": "^4.3.6",
-    "ethereum-waffle": "^3.4.4",
-    "ethers": "^5.6.8",
-    "hardhat": "^2.9.9"
-  }
-=======
-=======
->>>>>>> ad465603c1de75f79b00d6ea93fa21123706f592
-    "name": "semaphore-boilerplate",
-    "version": "1.0.0",
-    "description": "A simple Next.js/Hardhat privacy application with Semaphore.",
-    "license": "MIT",
-    "private": true,
+ 
+
     "scripts": {
         "dev": "npm-run-all -p next:dev hardhat:node",
         "next:dev": "next dev",
@@ -113,8 +94,4 @@
         "typescript": "4.5.5",
         "web3": "^1.7.4"
     }
-<<<<<<< HEAD
->>>>>>> bc2a32f... vercel resolve
-=======
->>>>>>> ad465603c1de75f79b00d6ea93fa21123706f592
 }
