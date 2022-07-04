@@ -35,6 +35,7 @@ node_modules/
 
 # Optional eslint cache
 .eslintcache
+next.config.js
 
 # Microbundle cache
 .rpt2_cache/
