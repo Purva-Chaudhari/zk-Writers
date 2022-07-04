@@ -15,6 +15,7 @@ import config from "./config.json";
 import { success, error, warn } from "./utilities/response";
 
 import "react-toastify/dist/ReactToastify.css";
+import { BiChevronsUp } from "react-icons/bi"
 const { port } = require('./config');
 console.log(`Your port is ${port}`); // 8626
 
@@ -60,6 +61,7 @@ export default function Main() {
         warn("Make sure you have MetaMask Connected");
         return;
       }
+      console.log("Transaction check")
       const accounts = await ethereum.request({method: "eth_requestAccounts"});
     } catch (err) {
       error(`${err.message}`);

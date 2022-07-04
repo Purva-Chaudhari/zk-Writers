@@ -7,6 +7,7 @@ import { providers,Contract, utils } from "ethers"
 import Head from "next/head"
 import { useState, useEffect } from "react"
 import { setCookie, hasCookie, getCookie} from 'cookies-next';
+import { success, error, warn } from "../utilities/response";
 
 export const Header = ({connectWallet, ToastContainer }) => {
   async function register(){
@@ -15,16 +16,16 @@ export const Header = ({connectWallet, ToastContainer }) => {
     if (typeof window.ethereum !== 'undefined') {
       console.log('MetaMask is installed!');
     }
-    
+    console.log("In register")
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()
-    //console.log({ signer, signature, address })
+    console.log({ signer, signature, address })
     const identity = new ZkIdentity(Strategy.MESSAGE, signature)
     const identityCommitment = identity.genIdentityCommitment()
-    //console.log(identityCommitment)    
+    console.log(identityCommitment)    
 
     const response = await fetch(`/api/register`, {
       method: "POST",

@@ -8,21 +8,18 @@ import { success, error, defaultToast } from "./utilities/response";
 import { Web3Storage, getFilesFromPath } from 'web3.storage'  
 import { providers,Contract, utils } from "ethers"
 import { Strategy, ZkIdentity } from "@zk-kit/identity"
-import { generateMerkleProof, Semaphore } from "@zk-kit/protocols"
+import { generateMerkleProof,genExternalNullifier, Semaphore } from "@zk-kit/protocols"
 import config from "./config.json";
 import { ethers } from "ethers";
 
-//import * as dotenv from "dotenv"
-//dotenv.config()
-//console.log()
  const token = config.API_TOKEN
 //const token = process.env.API_TOKEN
  const client = new Web3Storage({ token })
 
- async function getAllMembers(id){
-  let response = await fetch("http://localhost:8000/getAllLeaves")
+ async function getAllMembers(){
+  let response = await fetch("/api/members")
   let result = await response.json()
-  return result["leaves"]
+  return result["members"]
   //return [id]
 }
 
@@ -99,27 +96,50 @@ export default function Upload() {
   const saveFeed = async (coverImage) => {
     defaultToast("Saving Feed...");
 
-    console.log(title, description, category, coverImage);    
+    console.log(title, description, category, coverImage);  
 
+    try{  
     const message = "Create feed anonymously: zkWriter"
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    //await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()
+    console.log("Signer address")
+    console.log(address)
   
   
     const identity = new ZkIdentity(Strategy.MESSAGE, signature)
     const identityCommitment = identity.genIdentityCommitment()
-    const identityCommitments = await getAllMembers(identityCommitment)
+    const abiCoder = new ethers.utils.AbiCoder();
+	 const formattedIdentityCommitment = abiCoder.encode(
+	  ['uint256'],
+	  [identityCommitment]
+	);
+    var identityCommitments =[]
+    identityCommitments = await getAllMembers();
+  //   for (var i=0; i< identityCommitments.length ; i++){
+  //     const abiCoder = new ethers.utils.AbiCoder();
+	//     const formattedIdentityCommitment = abiCoder.encode(
+	//   ['uint256'],
+	//   [identityCommitment[i]]
+	// );
+      
+    //   identityCommitments[i] = BigInt(formattedIdentityCommitment)
+       
+    // }
     console.log(identityCommitments)
-    try{
+    console.log(formattedIdentityCommitment)
+    
+      console.log("Try stage 1")
         const merkleProof = generateMerkleProof(
             20, 
             0, 
-            identityCommitments, 
+            //[identityCommitment, 10042180541042440646184679446487112133385367353215564504971567245393989403115n], 
+            identityCommitments,
             identityCommitment
         )
+        console.log("Try stage 2")
   
         const signal = "My post"
         const nullifier = BigInt(Math.floor((Math.random() * 2**256) + 1));
@@ -131,9 +151,30 @@ export default function Upload() {
             externalNullifier,
             signal
         )   
-        const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore.zkey")
+        //console.log("Semaphore proof generated before")
+        const { proof, publicSignals } = await Semaphore.genProof(witness, "./semaphore.wasm", "./semaphore_final.zkey")
         const solidityProof = Semaphore.packToSolidityProof(proof)
         const UploadedDate = String(new Date());
+
+        //console.log("Semaphore proof generated after")
+       // const contract = await getContract();
+    
+      const bytes32Greeting = ethers.utils.formatBytes32String(signal)
+      /*
+       * Save the new feed to the blockchain
+       */
+      // await contract.createFeed(
+      //   title,
+      //   description,
+      //   category,
+      //   coverImage,
+      //   UploadedDate,
+      //   bytes32Greeting,
+      //   merkleProof.root.toString(),
+      //   publicSignals.nullifierHash.toString(), 
+      //   publicSignals.externalNullifier.toString(),
+      //   solidityProof
+      // );
         
         let response = await fetch("/api/createFeed",{
             method: "POST",
@@ -155,9 +196,10 @@ export default function Upload() {
                 proof: solidityProof
             })
         })
-        let result = await response.json()
+        let result = await response.json() 
         console.log(result)
         if(result["success"]){
+          console.log("Result is success")
           success("Feed Saved Successfully");
           window.location.href = "/";
 
@@ -168,6 +210,7 @@ export default function Upload() {
           setCoverImage("");
 
         } else {
+          console.log("Result is failed")
             error("Error Occured")
         }
       
@@ -237,14 +280,15 @@ export default function Upload() {
                   onChange={(e) => setCategory(e.target.value)}
                   className="dark:text-white mt-2 h-12 p-2 dark:border-gray-600 border rounded-xl border-borderWhiteGray bg-white dark:bg-backgroundBlack dark:text-[#9CA3AF] focus:outline-none"
                 >
-                  <option>Music</option>
+                  <option>Select a category</option>
+                  <option>Finance</option>
                   <option>Sports</option>
                   <option>Gaming</option>
                   <option>News</option>
-                  <option>Entertainment</option>
+                  <option>Economics</option>
                   <option>Education</option>
                   <option>Technology</option>
-                  <option>Travel</option>
+                  <option>Politics</option>
                   <option>Other</option>
                 </select>
               </div>

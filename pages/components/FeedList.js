@@ -96,9 +96,9 @@ export default function FeedList({ horizontal, feed }) {
           </p>
         )}
         {horizontal && (
-          <p className="text-sm flex items-center text-textSubTitle mt-1 ">
+          <p className="text-sm flex items-center text-textSubTitle text-black mt-1 ">
             {feed.description.slice(0, 30)}
-            <BiCheck size="20px" color="green" className="ml-1" />
+            {/* <BiCheck size="20px" color="green" className="ml-1" /> */}
           </p>
         )}
         <p className="text-sm flex items-center text-textSubTitle mt-1 text-black p-2">

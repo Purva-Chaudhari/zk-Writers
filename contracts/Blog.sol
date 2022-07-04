@@ -14,6 +14,7 @@ contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
     uint256 totalFeeds;
     using Counters for Counters.Counter;
     Counters.Counter private _feedIds;
+    uint256[] members;
 
     event FeedCreated(
         uint256 id,
@@ -35,6 +36,11 @@ contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
 
     function addMember(uint256 commitmentId) public {
         _addMember(groupId,commitmentId);
+        members.push(commitmentId);
+    }
+
+    function getMembers() external view returns (uint256[] memory) {
+        return members;
     }
 
     /*

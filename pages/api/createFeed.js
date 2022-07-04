@@ -40,8 +40,8 @@ export default async function handler(req, res) {
 	const coverImage = req.body.coverImage
 	const UploadedDate = req.body.UploadedDate
 	
-	const contract = getContract()
-	const transaction = await contract.createFeed(
+	const contract = await getContract()
+	await contract.createFeed(
 		title,
         description,
         category,
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
 		externalNullifier,
 		proof
 	)
-    console.log(transaction)
+    //console.log(transaction)
 	//const transactionReceipt = await transaction.wait()
 	res.setHeader('Content-Type', 'application/json');
 	//if (transactionReceipt.status !== 1) {

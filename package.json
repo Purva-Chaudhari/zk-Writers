@@ -34,6 +34,7 @@
         "http": "^0.0.1-security",
         "hyvor-talk-react": "^2.0.0",
         "ipfs-http-client": "^57.0.3",
+        "jsonwebtoken": "^8.5.1",
         "next": "12.0.10",
         "path": "^0.12.7",
         "react": "17.0.2",

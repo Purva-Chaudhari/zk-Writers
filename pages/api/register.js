@@ -5,6 +5,7 @@ const ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const PROVIDER_URL = process.env.PROVIDER_URL
 
+console.log("In register API")
 console.log(PROVIDER_URL)
 function getContract() {
   const provider = new ethers.providers.JsonRpcProvider(PROVIDER_URL);
@@ -25,7 +26,7 @@ async function addMember(signature){
 	const formattedIdentityCommitment = abiCoder.encode(
 	  ['uint256'],
 	  [identityCommitment]
-	);
+	)
 	const transaction = await contract.addMember(formattedIdentityCommitment);
 	const transactionReceipt = await transaction.wait();
 	if (transactionReceipt.status !== 1) {
