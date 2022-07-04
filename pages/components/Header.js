@@ -12,7 +12,7 @@ import { success, error, warn } from "../utilities/response";
 export const Header = ({connectWallet, ToastContainer }) => {
   async function register(){
     connectWallet()
-    const message = "ZK-Writerss"
+    const message = "Make me anonymous"
     if (typeof window.ethereum !== 'undefined') {
       console.log('MetaMask is installed!');
     }

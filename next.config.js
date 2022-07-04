@@ -2,6 +2,7 @@
 
 const nextConfig = {
     reactStrictMode: true,
+    pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js']
     webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
         if (!isServer) {
             config.plugins.push(
