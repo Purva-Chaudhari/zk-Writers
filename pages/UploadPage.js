@@ -99,7 +99,7 @@ export default function Upload() {
     console.log(title, description, category, coverImage);  
 
     try{  
-    const message = "Create feed anonymously: zkWriter"
+    const message = "Make me anonymous"
     //await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
