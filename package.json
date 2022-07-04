@@ -1,5 +1,6 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   "name": "zk-writers",
   "version": "1.0.0",
   "description": "ZKU Final Project",
@@ -28,6 +29,8 @@
     "hardhat": "^2.9.9"
   }
 =======
+=======
+>>>>>>> ad465603c1de75f79b00d6ea93fa21123706f592
     "name": "semaphore-boilerplate",
     "version": "1.0.0",
     "description": "A simple Next.js/Hardhat privacy application with Semaphore.",
@@ -110,5 +113,8 @@
         "typescript": "4.5.5",
         "web3": "^1.7.4"
     }
+<<<<<<< HEAD
 >>>>>>> bc2a32f... vercel resolve
+=======
+>>>>>>> ad465603c1de75f79b00d6ea93fa21123706f592
 }
