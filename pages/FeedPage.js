@@ -1,9 +1,9 @@
 import React, { Component, useEffect, useState } from "react";
-import getContract from "./utilities/getContract";
 import Link from "next/link";
 import Feed from "../components/Feed";
 import ContractAbi from "./utilities/Blog.json";
 import { ethers } from "ethers";  
+import getContract from "../components/getContract";
 
 export default function FeedPage (){
 
@@ -21,8 +21,6 @@ export default function FeedPage (){
         vars[key] = value;
       }
     );
-    console.log("Check ID Feedpage")
-    console.log(vars)
     return vars;
   };
 
@@ -33,14 +31,12 @@ export default function FeedPage (){
     try {
       // const provider = await new ethers.providers.Web3Provider(window.ethereum);
       // const signer = provider.getSigner();
-      // console.log("Get feed FeedPage")
-      // console.log(process.env.ZK_CONTRACT_ADDRESS)
       // const contract = await new ethers.Contract(
-      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      //   process.env.ZK_CONTRACT_ADDRESS,
       //   ContractAbi.abi,
       //   signer,
       // );
-      const contract = await getContract()
+      const contract = getContract()
       let feedId = getUrlValue()["id"];
       const singleFeed = await contract.getFeed(feedId-1);
 
@@ -76,22 +72,11 @@ export default function FeedPage (){
    */
   const getRelatedFeeds = async () => {
     try {
-      // const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      // const signer = provider.getSigner();
-      // console.log("Get related feed")
-      // console.log(process.env.ZK_CONTRACT_ADDRESS)
-      // const contract = await new ethers.Contract(
-      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      //   ContractAbi.abi,
-      //   signer,
-      // );
-      const contract = await getContract()
-      console.log("Hellllllp")
+      const contract = getContract()
       let feedId = getUrlValue()["id"];
-      console.log(feedId)
+      
       // Get all feeds and return feeds and filter only the one in the same category as the feed
       const allFeeds = await contract.getAllFeeds();
-      console.log(allFeeds);
       const singleFeed = await contract.getFeed(feedId-1);
       // Format feed
       const formattedSingleFeed = {
@@ -132,7 +117,7 @@ export default function FeedPage (){
     <div className="w-full  flex flex-row">
       <div className="flex-1 flex flex-col">
         <div className="flex flex-col m-10 justify-between lg:flex-row">
-          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed, process.env.API_TOKEN}/>}</div>
+          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed} API_TOKEN={process.env.API_TOKEN}/>}</div>
           <div className="w-2/6">
             <h4 className="text-xl font-bold dark:text-white ml-5 mb-3 text-black">
               {/* Related Feeds */}

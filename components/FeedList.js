@@ -7,8 +7,6 @@ async function retrieveFiles (cid, API_TOKEN) {
   const token = API_TOKEN
   const client = new Web3Storage({ token })
   const res = await client.get(cid)
-  console.log(token)
-  console.log(`Got a response! [${res.status}] ${res.statusText}`)
   // unpack File objects from the response
   const files = await res.files()
   return files[0].name
@@ -21,7 +19,6 @@ export default function FeedList({ horizontal, feed , API_TOKEN}) {
     retrieveFiles(cid, API_TOKEN)
    .then((fn) => setData(fn))
   }
- // console.log(feed.description.slice(0, 30))
   return (
     <div
       className={`${

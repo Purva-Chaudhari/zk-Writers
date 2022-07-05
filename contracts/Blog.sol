@@ -141,8 +141,6 @@ contract Blog is SemaphoreCore, SemaphoreGroups, Ownable{
          * We are using the struct Feed to create a news feed.
          To create a news feed* We use the id, title, description, location, category, coverImageHash, date, and author variables.
          */
-         console.log("In contrqct now ");
-         console.log(msg.sender);
         feeds.push(
             Feed(
                 _feedIds.current(),

@@ -97,15 +97,12 @@ export default function Upload() {
     /*
      * Upload the cover image to IPFS
      */
-    console.log(coverImage)
     uploadCoverImage(coverImage);
   };
 
   /*
    * A function to upload a cover image to IPFS
    */
-  // console.log("Rishabh")
-  // console.log(token)
   const uploadCoverImage = async (coverImage) => {
     defaultToast("Uploading Cover Image...");
 
@@ -129,7 +126,7 @@ export default function Upload() {
   const saveFeed = async (coverImage) => {
     defaultToast("Saving Feed..."); 
 
-    console.log(title, description, category, coverImage);  
+    //console.log(title, description, category, coverImage);  
 
     try{  
     const message = "Make me anonymous"
@@ -137,10 +134,7 @@ export default function Upload() {
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
-    const address = await signer.getAddress()
-    console.log("Signer address")
-    console.log(address)
-  
+    const address = await signer.getAddress()  
   
     const identity = new ZkIdentity(Strategy.MESSAGE, signature)
     const identityCommitment = identity.genIdentityCommitment()
@@ -151,28 +145,14 @@ export default function Upload() {
 	);
     var identityCommitments =[]
     identityCommitments = await getAllMembers();
-  //   for (var i=0; i< identityCommitments.length ; i++){
-  //     const abiCoder = new ethers.utils.AbiCoder();
-	//     const formattedIdentityCommitment = abiCoder.encode(
-	//   ['uint256'],
-	//   [identityCommitment[i]]
-	// );
-      
-    //   identityCommitments[i] = BigInt(formattedIdentityCommitment)
-       
-    // }
-    console.log(identityCommitments)
-    console.log(formattedIdentityCommitment)
+  
     
-      console.log("Try stage 1")
         const merkleProof = generateMerkleProof(
             20, 
             0, 
-            //[identityCommitment, 10042180541042440646184679446487112133385367353215564504971567245393989403115n], 
             identityCommitments,
             identityCommitment
         )
-        console.log("Try stage 2")
   
         const signal = "My post"
         const nullifier = BigInt(Math.floor((Math.random() * 2**256) + 1));
@@ -229,7 +209,7 @@ export default function Upload() {
             })
         })
         let result = await response.json() 
-        console.log(result)
+
         if(result["success"]){
           console.log("Result is success")
           success("Feed Saved Successfully");

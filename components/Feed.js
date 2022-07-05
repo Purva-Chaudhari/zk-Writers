@@ -11,10 +11,10 @@ import {
 
 async function retrieveFiles (cid, API_TOKEN) {
   const token = API_TOKEN
-  console.log(token)
+  //console.log(token)
   const client = new Web3Storage({ token })
   const res = await client.get(cid)
-  console.log(`Got a response! [${res.status}] ${res.statusText}`)
+  //console.log(`Got a response! [${res.status}] ${res.statusText}`)
   if (!res.ok) {
     throw new Error(`failed to get ${cid}`)
   }

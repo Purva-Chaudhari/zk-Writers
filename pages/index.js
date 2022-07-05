@@ -5,13 +5,11 @@ import { providers,Contract, utils } from "ethers"
 import Head from "next/head"
 import React from "react"
 import { useState, useEffect } from "react"
-//import { Header } from "./components/Header";
 import { ToastContainer } from "react-toastify";
 import FeedList from "../components/FeedList";
 import Link from "next/link"
-import getContract from "./utilities/getContract";
+import getContract from "../components/getContract";
 import ether from "ethers";
-//import { success, error, warn } from "./utilities/response";
 import { setCookie, hasCookie, getCookie} from 'cookies-next';
 
 import ContractAbi from "./utilities/Blog.json";
@@ -58,23 +56,19 @@ const warn = (message) => {
 };
 
 export default function Main() {
-  console.log("In main")
-  console.log(process.env.ZK_CONTRACT_ADDRESS)
   async function register(){
     const message = "Make me anonymous"
     if (typeof window.ethereum !== 'undefined') {
       console.log('MetaMask is installed!');
     }
-    console.log("In register")
+  
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()
-    console.log({ signer, signature, address })
     const identity = new ZkIdentity(Strategy.MESSAGE, signature)
-    const identityCommitment = identity.genIdentityCommitment()
-    console.log(identityCommitment)    
+    const identityCommitment = identity.genIdentityCommitment()   
 
     const response = await fetch(`/api/register`, {
       method: "POST",
@@ -153,21 +147,9 @@ const cookieB = hasCookie("id");
   const getFeeds = async () => {
     try {
       setLoading(true);
-      // const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      // const signer = provider.getSigner();
-      // console.log("Get feeds main")
-      // let ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS
-      // const contract = await new ethers.Contract(
-      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      //   ContractAbi.abi,
-      //   signer,
-      // );
-      // console.log(contract.address)
-      const contract = await getContract()
+      const contract = getContract()
       const AllFeeds = await contract.getAllFeeds();
-      console.log("Stage 3 ");
-      //console.log(AllFeeds.length)
-      
+      //console.log("Stage 3 ");      
       
       let cidarr = []
       const formattedFeed = AllFeeds.map((feed) => {
@@ -193,7 +175,6 @@ const cookieB = hasCookie("id");
   useEffect(() => {
     getFeeds();
     checkIfWalletIsConnected();
-    //console.log("In useeffect")
 
     const onFeedCreated = async (
       id,
@@ -218,22 +199,12 @@ const cookieB = hasCookie("id");
     let contract;
 
     if (window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      console.log("Get feeds main")
-      //console.log(process.env.ZK_CONTRACT_ADDRESS)
-      contract = new ethers.Contract(
-        process.env.ZK_CONTRACT_ADDRESS,
-        ContractAbi.abi,
-        signer,
-      );
-      console.log("How many times")
+      const contract = getContract()
      // contract.on("FeedCreated", onFeedCreated);
     }
 
     return () => {
       if (contract) {
-        console.log("Return")
         contract.off("FeedCreated", onFeedCreated);
       }
     };
@@ -301,7 +272,7 @@ const cookieB = hasCookie("id");
             return (
               <Link href={`/FeedPage?id=${feed.id}`} key={index}>
                 <div className="w-80 h-80 m-2">
-                  <FeedList feed={feed, process.env.API_TOKEN} />
+                  <FeedList feed={feed} API_TOKEN={process.env.API_TOKEN}/>
                 </div>
               </Link>
             );
