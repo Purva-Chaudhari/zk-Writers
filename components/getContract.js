@@ -1,4 +1,4 @@
-import ContractAbi from "./Blog.json";
+import ContractAbi from "../pages/utilities/Blog.json";
 import { ethers } from "ethers";
 // require('dotenv').config({ path: '../../env' })
 const ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS;

@@ -9,8 +9,9 @@ import {
   AiFillRedditCircle,
 } from "react-icons/ai";
 
-async function retrieveFiles (cid) {
-  const token = process.env.API_TOKEN
+async function retrieveFiles (cid, API_TOKEN) {
+  const token = API_TOKEN
+  console.log(token)
   const client = new Web3Storage({ token })
   const res = await client.get(cid)
   console.log(`Got a response! [${res.status}] ${res.statusText}`)
@@ -22,11 +23,11 @@ async function retrieveFiles (cid) {
   return files[0].name
 }
 
-export default function Feed({ feed }) {
+export default function Feed({ feed, API_TOKEN }) {
   const [data, setData] = useState({});
   const cid = feed.coverImageHash;
   if(cid){
-    retrieveFiles(cid)
+    retrieveFiles(cid, API_TOKEN)
    .then((fn) => setData(fn))
   }
   return (

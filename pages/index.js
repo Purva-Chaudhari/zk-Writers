@@ -5,19 +5,100 @@ import { providers,Contract, utils } from "ethers"
 import Head from "next/head"
 import React from "react"
 import { useState, useEffect } from "react"
-import { Header } from "./components/Header";
+//import { Header } from "./components/Header";
 import { ToastContainer } from "react-toastify";
-import FeedList from "./components/FeedList";
+import FeedList from "../components/FeedList";
 import Link from "next/link"
-import getContract from "./utilities/getContract";
+//import getContract from "../components/getContract";
 import ether from "ethers";
-import { success, error, warn } from "./utilities/response";
+//import { success, error, warn } from "./utilities/response";
+import { setCookie, hasCookie, getCookie} from 'cookies-next';
+
+import ContractAbi from "./utilities/Blog.json";
+import { ethers } from "ethers";
 
 import "react-toastify/dist/ReactToastify.css";
 import { BiChevronsUp } from "react-icons/bi"
+import { toast } from "react-toastify";
 
+const success = (message) => {
+  toast.success(message, {
+    position: "bottom-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+
+const error = (message) => {
+  toast.error(message, {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+
+const warn = (message) => {
+  toast.warn(message, {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
 
 export default function Main() {
+  console.log("In main")
+  console.log(process.env.ZK_CONTRACT_ADDRESS)
+  async function register(){
+    const message = "Make me anonymous"
+    if (typeof window.ethereum !== 'undefined') {
+      console.log('MetaMask is installed!');
+    }
+    console.log("In register")
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const provider = new providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const signature = await signer.signMessage(message)
+    const address = await signer.getAddress()
+    console.log({ signer, signature, address })
+    const identity = new ZkIdentity(Strategy.MESSAGE, signature)
+    const identityCommitment = identity.genIdentityCommitment()
+    console.log(identityCommitment)    
+
+    const response = await fetch(`/api/register`, {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        signature: signature
+      })
+  })
+  const result = await response.json()
+  
+  if(result["success"]){
+    success("User successfully Registered")	
+  } else {
+    error("User Registration failed")
+  }
+    setCookie('id', identityCommitment, { path: '/' }); 
+    //const c = getCookie('id')
+    //console.log("Cookie : ", c)   
+}
+
+const cookieB = hasCookie("id");
   //console.log("in main")
   const [loading, setLoading] = useState(false);
   const [loadingArray] = useState(15);
@@ -72,16 +153,21 @@ export default function Main() {
   const getFeeds = async () => {
     try {
       setLoading(true);
-      const contract = await getContract();
+      const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log("Get feeds main")
+      let ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS
+      const contract = await new ethers.Contract(
+        ZK_CONTRACT_ADDRESS,
+        ContractAbi.abi,
+        signer,
+      );
+      console.log(contract.address)
       const AllFeeds = await contract.getAllFeeds();
-      //console.log("Stage 3 ");
+      console.log("Stage 3 ");
       //console.log(AllFeeds.length)
       
       
-      /*
-       * We only need title, category, coverImageHash, and author
-       * pick those out
-       */
       let cidarr = []
       const formattedFeed = AllFeeds.map((feed) => {
         return {
@@ -131,8 +217,16 @@ export default function Main() {
     let contract;
 
     if (window.ethereum) {
-      contract = getContract();
-      //console.log("How many times")
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log("Get feeds main")
+      //console.log(process.env.ZK_CONTRACT_ADDRESS)
+      contract = new ethers.Contract(
+        process.env.ZK_CONTRACT_ADDRESS,
+        ContractAbi.abi,
+        signer,
+      );
+      console.log("How many times")
      // contract.on("FeedCreated", onFeedCreated);
     }
 
@@ -151,16 +245,62 @@ export default function Main() {
     <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
     <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
     <div className="m-8 relative space-y-4">
-        <Header
-          connectWallet={connectWallet}
-          ToastContainer={ToastContainer}
-        />
+    
+    <header className="w-full flex justify-between h-20 items-center border-b p-4 border-borderWhiteGray dark:border-borderGray">
+      <div className=" w-1/3">
+        <Link href="/" className="flex items-center">
+          <h1 className="text-4xl font-bold text-black-700 italic">Zk-Writers 🖊️</h1>
+        </Link>
+      </div>
+      <div className=" w-1/3 flex justify-center items-center">
+        <h1 className="text-2xl font-bold text-black-500 dark:text-black-400">
+          Blog Feed!
+        </h1>
+      </div>
+
+      {cookieB && connectWallet? (
+        <div className="w-1/3 flex justify-end items-center">
+          <Link href="/UploadPage">
+            <button className="items-center bg-violet-700 rounded-full font-medium p-2 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white">
+              <span className="">Create a New Feed</span>
+            </button>
+          </Link>
+        </div>
+      ) : (
+        <div className=" w-1/3 flex justify-end gap-3">
+          <button
+            className="items-center bg-violet-700 rounded-full font-medium p-3 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white"
+            onClick={() => {
+              connectWallet();
+            }}
+          >
+            <span className="">Connect your wallet</span>
+          </button>
+          <Link href="/Register">
+            <button className="items-center bg-violet-700 rounded-full font-medium p-2 shadow-lg color-blue-500 hover:bg-green-500 focus:outline-none focus:shadow-outline text-white" onClick={register}>
+              <span className="">Register</span>
+            </button>
+          </Link>
+        </div>
+      )}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </header>
         <div className="flex-1 flex flex-row flex-wrap">
           {feeds.map((feed, index) => {
             return (
               <Link href={`/FeedPage?id=${feed.id}`} key={index}>
                 <div className="w-80 h-80 m-2">
-                  <FeedList feed={feed} />
+                  <FeedList feed={feed, process.env.API_TOKEN} />
                 </div>
               </Link>
             );

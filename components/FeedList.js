@@ -3,21 +3,22 @@ import { BiCheck } from "react-icons/bi";
 import { Web3Storage, makeStorageClient } from 'web3.storage'; 
 import {useState} from "react";
 
-async function retrieveFiles (cid) {
-  const token = process.env.API_TOKEN
+async function retrieveFiles (cid, API_TOKEN) {
+  const token = API_TOKEN
   const client = new Web3Storage({ token })
   const res = await client.get(cid)
-  //console.log(`Got a response! [${res.status}] ${res.statusText}`)
+  console.log(token)
+  console.log(`Got a response! [${res.status}] ${res.statusText}`)
   // unpack File objects from the response
   const files = await res.files()
   return files[0].name
 }
 
-export default function FeedList({ horizontal, feed }) {
+export default function FeedList({ horizontal, feed , API_TOKEN}) {
   const [data, setData] = useState({});
   const cid = feed.coverImageHash;
   if (cid){
-    retrieveFiles(cid)
+    retrieveFiles(cid, API_TOKEN)
    .then((fn) => setData(fn))
   }
  // console.log(feed.description.slice(0, 30))

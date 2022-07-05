@@ -1,7 +1,9 @@
 import React, { Component, useEffect, useState } from "react";
-import getContract from "./utilities/getContract";
+//import getContract from "../components/getContract";
 import Link from "next/link";
-import Feed from "./components/Feed";
+import Feed from "../components/Feed";
+import ContractAbi from "./utilities/Blog.json";
+import { ethers } from "ethers";  
 
 export default function FeedPage (){
 
@@ -29,9 +31,16 @@ export default function FeedPage (){
    */
   const getFeed = async () => {
     try {
-      const contract = await getContract();
+      const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log("Get feed FeedPage")
+      console.log(process.env.ZK_CONTRACT_ADDRESS)
+      const contract = await new ethers.Contract(
+        process.env.ZK_CONTRACT_ADDRESS,
+        ContractAbi.abi,
+        signer,
+      );
       let feedId = getUrlValue()["id"];
-      console.log("CHeck feed id ",feedId)
       const singleFeed = await contract.getFeed(feedId-1);
 
       // Format feed
@@ -66,7 +75,15 @@ export default function FeedPage (){
    */
   const getRelatedFeeds = async () => {
     try {
-      const contract = await getContract();
+      const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log("Get related feed")
+      console.log(process.env.ZK_CONTRACT_ADDRESS)
+      const contract = await new ethers.Contract(
+        process.env.ZK_CONTRACT_ADDRESS,
+        ContractAbi.abi,
+        signer,
+      );
       console.log("Hellllllp")
       let feedId = getUrlValue()["id"];
       console.log(feedId)
@@ -113,7 +130,7 @@ export default function FeedPage (){
     <div className="w-full  flex flex-row">
       <div className="flex-1 flex flex-col">
         <div className="flex flex-col m-10 justify-between lg:flex-row">
-          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed}/>}</div>
+          <div className="lg:w-4/6 w-6/6">{feed && <Feed feed={feed, process.env.API_TOKEN}/>}</div>
           <div className="w-2/6">
             <h4 className="text-xl font-bold dark:text-white ml-5 mb-3 text-black">
               {/* Related Feeds */}

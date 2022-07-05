@@ -2,13 +2,49 @@ import React, { useState, useRef } from "react";
 import { BiCloud, BiPlus } from "react-icons/bi";
 import { ToastContainer } from "react-toastify";
 
-import { success, error, defaultToast } from "./utilities/response";
+//import { success, error, defaultToast } from "./utilities/response";
 import { Web3Storage, getFilesFromPath } from 'web3.storage'  
 import { providers,Contract, utils } from "ethers"
 import { Strategy, ZkIdentity } from "@zk-kit/identity"
 import { generateMerkleProof,genExternalNullifier, Semaphore } from "@zk-kit/protocols"
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
+const success = (message) => {
+  toast.success(message, {
+    position: "bottom-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+
+const error = (message) => {
+  toast.error(message, {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+
+const defaultToast = (message) => {
+  toast(message, {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
  const token = process.env.API_TOKEN
 //const token = process.env.API_TOKEN
  const client = new Web3Storage({ token })
