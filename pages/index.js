@@ -9,7 +9,7 @@ import { useState, useEffect } from "react"
 import { ToastContainer } from "react-toastify";
 import FeedList from "../components/FeedList";
 import Link from "next/link"
-//import getContract from "../components/getContract";
+import getContract from "./utilities/getContract";
 import ether from "ethers";
 //import { success, error, warn } from "./utilities/response";
 import { setCookie, hasCookie, getCookie} from 'cookies-next';
@@ -153,16 +153,17 @@ const cookieB = hasCookie("id");
   const getFeeds = async () => {
     try {
       setLoading(true);
-      const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      console.log("Get feeds main")
-      let ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS
-      const contract = await new ethers.Contract(
-        ZK_CONTRACT_ADDRESS,
-        ContractAbi.abi,
-        signer,
-      );
-      console.log(contract.address)
+      // const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      // const signer = provider.getSigner();
+      // console.log("Get feeds main")
+      // let ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS
+      // const contract = await new ethers.Contract(
+      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      //   ContractAbi.abi,
+      //   signer,
+      // );
+      // console.log(contract.address)
+      const contract = await getContract()
       const AllFeeds = await contract.getAllFeeds();
       console.log("Stage 3 ");
       //console.log(AllFeeds.length)

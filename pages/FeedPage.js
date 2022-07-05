@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from "react";
-//import getContract from "../components/getContract";
+import getContract from "./utilities/getContract";
 import Link from "next/link";
 import Feed from "../components/Feed";
 import ContractAbi from "./utilities/Blog.json";
@@ -31,15 +31,16 @@ export default function FeedPage (){
    */
   const getFeed = async () => {
     try {
-      const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      console.log("Get feed FeedPage")
-      console.log(process.env.ZK_CONTRACT_ADDRESS)
-      const contract = await new ethers.Contract(
-        process.env.ZK_CONTRACT_ADDRESS,
-        ContractAbi.abi,
-        signer,
-      );
+      // const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      // const signer = provider.getSigner();
+      // console.log("Get feed FeedPage")
+      // console.log(process.env.ZK_CONTRACT_ADDRESS)
+      // const contract = await new ethers.Contract(
+      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      //   ContractAbi.abi,
+      //   signer,
+      // );
+      const contract = await getContract()
       let feedId = getUrlValue()["id"];
       const singleFeed = await contract.getFeed(feedId-1);
 
@@ -75,15 +76,16 @@ export default function FeedPage (){
    */
   const getRelatedFeeds = async () => {
     try {
-      const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      console.log("Get related feed")
-      console.log(process.env.ZK_CONTRACT_ADDRESS)
-      const contract = await new ethers.Contract(
-        process.env.ZK_CONTRACT_ADDRESS,
-        ContractAbi.abi,
-        signer,
-      );
+      // const provider = await new ethers.providers.Web3Provider(window.ethereum);
+      // const signer = provider.getSigner();
+      // console.log("Get related feed")
+      // console.log(process.env.ZK_CONTRACT_ADDRESS)
+      // const contract = await new ethers.Contract(
+      //   "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      //   ContractAbi.abi,
+      //   signer,
+      // );
+      const contract = await getContract()
       console.log("Hellllllp")
       let feedId = getUrlValue()["id"];
       console.log(feedId)

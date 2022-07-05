@@ -190,7 +190,6 @@ export default function Upload() {
         const UploadedDate = String(new Date());
 
         //console.log("Semaphore proof generated after")
-       // const contract = await getContract();
     
       const bytes32Greeting = ethers.utils.formatBytes32String(signal)
       /*

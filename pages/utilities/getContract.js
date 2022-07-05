@@ -1,4 +1,4 @@
-import ContractAbi from "../pages/utilities/Blog.json";
+import ContractAbi from "./Blog.json";
 import { ethers } from "ethers";
 // require('dotenv').config({ path: '../../env' })
 const ZK_CONTRACT_ADDRESS = process.env.ZK_CONTRACT_ADDRESS;
@@ -9,7 +9,7 @@ export default function getContract() {
   const signer = provider.getSigner();
   console.log(ZK_CONTRACT_ADDRESS)
   let contract = new ethers.Contract(
-    ZK_CONTRACT_ADDRESS,
+    "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     ContractAbi.abi,
     signer,
   );
