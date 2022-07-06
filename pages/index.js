@@ -148,14 +148,7 @@ const cookieB = hasCookie("id");
     try {
       setLoading(true);
       const contract = getContract()  
-      console.log("In main get feeds")
-      console.log(contract.address)
-      console.log(window.ethereum)
-      const provider = new providers.JsonRpcProvider(process.env.PROVIDER_URL)
-      console.log(provider.getCode(contract.address))
-      console.log(contract.getAllFeeds())
-      const AllFeeds = await contract.getAllFeeds();
-      console.log("Stage 3 ");      
+      const AllFeeds = await contract.getAllFeeds();     
       
       const formattedFeed = AllFeeds.map((feed) => {
         return {
