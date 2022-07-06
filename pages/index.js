@@ -64,6 +64,9 @@ export default function Main() {
   
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum)
+    //const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    //console.log(wallet.address)
+    //const signer = wallet.provider.getSigner(wallet.address);
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()
@@ -148,8 +151,9 @@ const cookieB = hasCookie("id");
     try {
       setLoading(true);
       const contract = getContract()  
+      //console.log(contract.address)
       const AllFeeds = await contract.getAllFeeds();     
-      
+      //console.log("Stage 3")
       const formattedFeed = AllFeeds.map((feed) => {
         return {
           id: feed.id,

@@ -131,7 +131,9 @@ export default function Upload() {
     try{  
     const message = "Make me anonymous"
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const provider = new providers.JsonRpcProvider(process.env.PROVIDER_URL)
+    const provider = new providers.Web3Provider(window.ethereum)
+    //const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    //const signer = wallet.provider.getSigner(wallet.address);
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()  
@@ -139,14 +141,11 @@ export default function Upload() {
     const identity = new ZkIdentity(Strategy.MESSAGE, signature)
     const identityCommitment = identity.genIdentityCommitment()
     const abiCoder = new ethers.utils.AbiCoder();
-	 const formattedIdentityCommitment = abiCoder.encode(
-	  ['uint256'],
-	  [identityCommitment]
-	);
+	
     var identityCommitments =[]
     identityCommitments = await getAllMembers();
   
-    
+    console.log(identityCommitments)
         const merkleProof = generateMerkleProof(
             20, 
             0, 
