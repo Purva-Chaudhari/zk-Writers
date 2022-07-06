@@ -8,7 +8,7 @@ const PROVIDER_URL = process.env.PROVIDER_URL
 console.log("In register API")
 console.log(PROVIDER_URL)
 function getContract() {
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const provider = new ethers.providers.JsonRpcProvider(PROVIDER_URL);
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
   const contract = new ethers.Contract(
     ZK_CONTRACT_ADDRESS,
