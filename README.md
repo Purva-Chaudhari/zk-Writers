@@ -1,40 +1,43 @@
 <p align="center">
-    <h1 align="center">
-      <img width="40" src="https://github.com/semaphore-protocol/docs/blob/main/static/img/semaphore-icon.svg">  
-      Semaphore Boilerplate
+    <h1 align="center">  
+      ZK-Writers
     </h1>
-    <p align="center">A simple Next.js/Hardhat privacy application with <a href="https://github.com/appliedzkp/semaphore">Semaphore</a>.</p>
+    <p align="center">The project Zk-Writers is a building block towards making a decentralized anonymous blogging website. It is a zero-knowledge based website which uses <a href="https://github.com/appliedzkp/semaphore">Semaphores</a>.</p>
 </p>
 
 <p align="center">
-    <a href="https://github.com/cedoor/semaphore-boilerplate/blob/main/LICENSE">
-        <img alt="Github license" src="https://img.shields.io/github/license/cedoor/semaphore-boilerplate.svg?style=flat-square">
-    </a>
-    <a href="https://nextjs.org/">
-        <img alt="Next.js" src="https://img.shields.io/badge/framework-nextjs-393a2a?style=flat-square">
-    </a>
-    <a href="https://hardhat.org/">
-        <img alt="Hardhat" src="https://img.shields.io/badge/contracts-hardhat-afb719?style=flat-square">
-    </a>
+  <img width=50% height="300" src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/ZKWriter.png">
 </p>
 
-The code can be divided into contracts, frontend and backend.
+## Technology Stack 
+1. Front-End
+    * Next Js
+    * Tailwind CSS
+2. Backend
+    * Solidity contract - Blog.sol 
+    * IPFS
+    * Semaphore - appliedzkp library
+3. Relayer Api
+4. Deployment - 
+    * Vercel 
+    * On goerli network and Polygon mainnet
 
-* [Greeters.sol](https://github.com/cedoor/semaphore-boilerplate/blob/main/contracts/Greeters.sol) contains the root of an offchain Merkle tree to represent the greeters (tree leaves), i.e. the identity commitments generated using the first 3 Ethereum accounts of the Hardhat testing wallet. It also contains a simple function to allow greeters to greet, only once and only if they create a valid Semaphore proof.
-* The [frontend code](https://github.com/cedoor/semaphore-boilerplate/blob/main/pages/index.tsx) allows greeters to create a Semaphore identity with a signed Metamask message (using one of the first 3 Hardhat accounts) and a valid zero-knowledge proof.
-* The [backend code](https://github.com/cedoor/semaphore-boilerplate/blob/main/pages/api/greet.ts) is an API that sends a `greet` transaction signed by the contract owner with the zero-knowledge proof of a greeter.
+## System Design
+<p align="center">
+  <img width=50% height="300" src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/SystemDiagram.png">
+</p>
 
-## 🛠 Install
+## Run locally
+
+### 🛠 Install
 
 Clone this repository and install the dependencies:
 
 ```bash
 git clone https://github.com/cedoor/semaphore-boilerplate.git
-cd semaphore-boilerplate
+cd zk-Writers
 yarn
 ```
-
-## 📜 Usage
 
 #### 1. Compile & test the contract
 
@@ -48,7 +51,6 @@ yarn test
 ```bash
 yarn dev
 ```
-
 #### 3. Deploy the contract
 
 ```bash
