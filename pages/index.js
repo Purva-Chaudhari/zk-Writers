@@ -88,8 +88,8 @@ export default function Main() {
     error("User Registration failed")
   }
     setCookie('id', identityCommitment, { path: '/' }); 
-    //const c = getCookie('id')
-    //console.log("Cookie : ", c)   
+    const c = getCookie('id')
+    console.log("Cookie : ", c)   
 }
 
 const cookieB = hasCookie("id");
