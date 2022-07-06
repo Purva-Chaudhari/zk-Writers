@@ -65,6 +65,7 @@ artifacts
 cache
 
 .next.config.js
+.next
 
 # Docusaurus cache and generated files
 .docusaurus
