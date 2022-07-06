@@ -20,15 +20,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/index.js"
     ],
-    "/FeedPage": [
+    "/Register": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/FeedPage.js"
-    ],
-    "/UploadPage": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/UploadPage.js"
+      "static/chunks/pages/Register.js"
     ],
     "/_app": [
       "static/chunks/webpack.js",

@@ -63,7 +63,7 @@ export default function Main() {
     }
   
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const provider = new providers.JsonRpcProvider(process.env.PROVIDER_URL)
+    const provider = new providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()

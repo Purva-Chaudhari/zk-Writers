@@ -2,7 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/members": "pages/api/members.js",
-  "/api/createFeed": "pages/api/createFeed.js",
-  "/": "pages/index.js"
+  "/api/register": "pages/api/register.js"
 }
