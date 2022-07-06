@@ -35,7 +35,7 @@ node_modules/
 
 # Optional eslint cache
 .eslintcache
-next.config.js
+#next.config.js
 
 # Microbundle cache
 .rpt2_cache/
@@ -64,7 +64,7 @@ dist
 artifacts
 cache
 
-.next.config.js
+#.next.config.js
 .next
 
 # Docusaurus cache and generated files
