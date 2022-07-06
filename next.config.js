@@ -2,6 +2,13 @@
 
 
 const nextConfig = {
+    env: {
+        PRIVATE_KEY:process.env.PRIVATE_KEY,
+        ZK_CONTRACT_ADDRESS:process.env.ZK_CONTRACT_ADDRESS,
+        MATIC_URL:process.env.MATIC_URL,
+        PROVIDER_URL:process.env.PROVIDER_URL,
+        API_TOKEN:process.env.API_TOKEN
+    },
 
     //pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
 
