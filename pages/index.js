@@ -63,7 +63,7 @@ export default function Main() {
     }
   
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const provider = new providers.Web3Provider(window.ethereum)
+    const provider = new providers.JsonRpcProvider(process.env.PROVIDER_URL)
     const signer = provider.getSigner()
     const signature = await signer.signMessage(message)
     const address = await signer.getAddress()
@@ -147,11 +147,16 @@ const cookieB = hasCookie("id");
   const getFeeds = async () => {
     try {
       setLoading(true);
-      const contract = getContract()
+      const contract = getContract()  
+      console.log("In main get feeds")
+      console.log(contract.address)
+      console.log(window.ethereum)
+      const provider = new providers.JsonRpcProvider(process.env.PROVIDER_URL)
+      console.log(provider.getCode(contract.address))
+      console.log(contract.getAllFeeds())
       const AllFeeds = await contract.getAllFeeds();
-      //console.log("Stage 3 ");      
+      console.log("Stage 3 ");      
       
-      let cidarr = []
       const formattedFeed = AllFeeds.map((feed) => {
         return {
           id: feed.id,
