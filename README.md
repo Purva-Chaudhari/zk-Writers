@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img width=50% height="300" src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/ZKWriter.png">
+  <img src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/ZKWriter.png">
 </p>
 
 ## Technology Stack 
@@ -24,7 +24,7 @@
 
 ## System Design
 <p align="center">
-  <img width=50% height="300" src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/SystemDiagram.png">
+  <img src="https://github.com/Purva-Chaudhari/zk-Writers/blob/main/images/SystemDiagram.png">
 </p>
 
 ## Run locally
