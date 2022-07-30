@@ -2,6 +2,7 @@ import React from "react";
 import { BiCheck } from "react-icons/bi";
 import { useState } from "react";
 import { Web3Storage, makeStorageClient } from 'web3.storage';
+import Markdown from "react-markdown";
 
 import {
   AiFillTwitterCircle,
@@ -30,6 +31,7 @@ export default function Feed({ feed, API_TOKEN }) {
     retrieveFiles(cid, API_TOKEN)
    .then((fn) => setData(fn))
   }
+  const str = "# Hello"
   return (
     <div>
       <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
@@ -75,7 +77,10 @@ export default function Feed({ feed, API_TOKEN }) {
           </a>
         </div>
       </div>
-      <p className="text-sm text-black mt-4">{feed.description}</p>
+      {/* <p className="text-sm text-black mt-4"> {feed.description}*/}
+      <Markdown children={str}/>
+        
+        {/* </p> */}
     </div>
   );
 }
